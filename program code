@@ -1,0 +1,53 @@
+import time
+
+class Vehicle:
+    def __init__(self):
+        self.current_location = (0, 0)
+        self.current_speed = 0
+
+    def navigate(self, navigation):
+        while True:
+            destination = navigation.get_destination(self.current_location)
+            self.current_speed = navigation.get_speed(self.current_location, destination)
+            print(f"Current location: {self.current_location}, Current speed: {self.current_speed}")
+            time.sleep(1)
+            self.current_location = destination
+
+class Navigation:
+    def __init__(self, traffic_data):
+        self.traffic_data = traffic_data
+
+    def get_destination(self, current_location):
+        # Choose a random destination for testing purposes
+        return (10, 10)
+
+    def get_speed(self, current_location, destination):
+        # Calculate the speed based on traffic conditions and the distance to the destination
+        distance = ((destination[0] - current_location[0]) ** 2 + (destination[1] - current_location[1]) ** 2) ** 0.5
+        traffic_speed = self.traffic_data.get_traffic_speed(current_location)
+        return min(distance, traffic_speed)
+
+class TrafficData:
+    def __init__(self):
+        self.traffic_speeds = {}
+
+    def update_traffic_speed(self, location, speed):
+        self.traffic_speeds[location] = speed
+
+    def get_traffic_speed(self, location):
+        if location in self.traffic_speeds:
+            return self.traffic_speeds[location]
+        else:
+            return 30  # Default speed if no data is available
+
+# Initialize the system
+traffic_data = TrafficData()
+navigation = Navigation(traffic_data)
+vehicle = Vehicle()
+
+# Simulate traffic data updates
+for i in range(10):
+    traffic_data.update_traffic_speed((i, i), i * 5)
+
+# Start vehicle navigation
+vehicle.navigate(navigation)
